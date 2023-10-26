@@ -1,4 +1,4 @@
-# import os
+import os
 import sys
 import time
 
@@ -28,7 +28,7 @@ class CustomConnector(ExternalImportConnector):
     def _collect_intelligence(self) -> []:
         """Collects intelligence from channels
 
-        Aadd your code depending on the use case as stated at https://docs.opencti.io/latest/development/connectors/.
+        add your code depending on the use case as stated at https://docs.opencti.io/latest/development/connectors/.
         Some sample code is provided as a guide to add a specific observable and a reference to the main object.
         Consider adding additional methods to the class to make the code more readable.
 
