@@ -6,7 +6,7 @@ import stix2
 from lib.external_import import ExternalImportConnector
 
 
-class CustomConnector(ExternalImportConnector):
+class SimpleConnector(ExternalImportConnector):
     def __init__(self):
         """Initialization of the connector
 
@@ -74,7 +74,7 @@ class CustomConnector(ExternalImportConnector):
 
 if __name__ == "__main__":
     try:
-        connector = CustomConnector()
+        connector = SimpleConnector()
         connector.run()
     except Exception as e:
         print(e)

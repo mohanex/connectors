@@ -1,7 +1,14 @@
+from datetime import datetime
+from typing import Optional
 import os
 import sys
+import yaml
 import time
-from datetime import datetime
+import urllib
+import ssl
+import json
+import certifi
+
 
 import stix2
 from pycti import OpenCTIConnectorHelper
@@ -46,9 +53,51 @@ class ExternalImportConnector:
             self.helper.log_warning(msg)
             self.update_existing_data = "false"
 
+    def retrieve_data(self, url: str) -> Optional[str]:
+        """
+        Retrieve data from the given url.
+
+        Parameters
+        ----------
+        url : str
+            Url to retrieve.
+
+        Returns
+        -------
+        str
+            A string with the content or None in case of failure.
+        """
+        try:
+            return (
+                urllib.request.urlopen(
+                    url,
+                    context=ssl.create_default_context(cafile=certifi.where()),
+                )
+                .read()
+                .decode("utf-8")
+            )
+        except (
+            urllib.error.URLError,
+            urllib.error.HTTPError,
+            urllib.error.ContentTooShortError,
+        ) as urllib_error:
+            self.helper.log_error(f"Error retrieving url {url}: {urllib_error}")
+        return None
+
+
     def _collect_intelligence(self) -> list:
         """Collect intelligence from the source"""
-        raise NotImplementedError
+        if (
+            self.bhadra_url is not None
+            and len(self.bhadra_url) > 0
+        ):
+            bhadra_data = self.retrieve_data(self.bhadra_url)
+            bhadra_data_with_confidence = (
+                self.add_confidence_to_bundle_objects(bhadra_data)
+            )
+            self.helper.log_debug(bhadra_data_with_confidence)
+            self.send_bundle(work_id, bhadra_data_with_confidence)
+
 
     def _get_interval(self) -> int:
         """Returns the interval to use for the connector
